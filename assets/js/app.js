@@ -5,9 +5,6 @@ class Move{
 			this.id = piece.id
 			this.fromX = piece.x
 			this.fromY = piece.y
-			this.hash = ''
-
-			this.children = []
 
 			switch(direction){
 				case 'up':
@@ -63,30 +60,20 @@ const app = new Vue({
 				{w: 1, h: 1, x: 2, y: 4, type: 'square', id: 's4'},
 			],
 
-			// tree of all possible moves
-			// each node is a move.
-			moves: [],
 			round: 0,
 			sequence: [],
 			boardStates: [], // list of pieces' fingerprints
 			directions: ['up', 'right', 'down', 'left'],
-			stepInterval: 75,
+			stepInterval: 25,
 	},
-	// created: function(){
-	// 	console.debug('created')
-	// },
-	// mounted: function(){
-	// 	console.debug('mounted')
-	// },
 	methods: {
 		startSolve: async function(e){
 			console.log('start solving...')
 
-			this.moves = []
-			this.sequence = []
-			const res = await this.solve(this.clone(this.pieces))
+			this.sequence = await this.solve(this.clone(this.pieces))
 
-			console.log('SUUUUUCCCEEEESSS ' + res)
+			console.log('VICTORY !')
+			console.log(this.sequence)
 		},
 		// finds the sequence of moves that resolves the problem, and records it.
 		// Must detect loops & reverts !!!
@@ -99,33 +86,36 @@ const app = new Vue({
 				piece.x = lastMove.toX
 				piece.y = lastMove.toY
 
-				lastMove.hash = this.getHash(pieces)
-				if (this.boardStates.includes(lastMove.hash)){
+				// check if state is known
+				const boardHash = this.getHash(pieces)
+				if (this.boardStates.includes(boardHash)){
 					console.warn('Circular move !')
 					return false
 				}
 				else
-					this.boardStates.push(lastMove.hash)
-			}
+					this.boardStates.push(boardHash)
 
-			this.pieces = pieces
+				this.pieces = pieces // update UI
+
+				// check winning condition
+				if (lastMove && lastMove.id === 't' && lastMove.toX === this.solution.x && lastMove.toY === this.solution.y)
+					return [lastMove]
+			}
 
 			// find free cells
 			const cells = this.mapCells(pieces)
-			const moves = []
+			let moves = []
 
 			// list possible moves
-			for (const p of pieces){
+			for (let i = 0; i < pieces.length; i++){
+				const p = pieces[i]
 				let up = true, down = true, left = true, right = true
-				// let moveOk = [true, true, true, true] // follow top/right/bottom/left CSS convention
 
-				// check if at board limit
+				// check if piece is at board boundary
 				if (p.x === 0) left = false
 				if (p.y === 0) up = false
 				if (p.x + p.w === this.board.width) right = false
 				if (p.y + p.h === this.board.height) down = false
-
-				// console.debug(`${p.id}: ${p.x}, ${p.y}`)
 
 				// check if move possible
 				for (let x = p.x; x < p.x + p.w; x++){
@@ -151,9 +141,10 @@ const app = new Vue({
 			if (moves.length === 0)
 				return false
 
-			if (moves.find(m => m.id === 't' && m.toX === this.solution.x && m.toY === this.solution.y)){
-				console.log('VICTORY !!')
-				return true
+			// check for winner move among candidates. If found, use only this one.
+			const winnerMove = moves.find(m => m.id === 't' && m.toX === this.solution.x && m.toY === this.solution.y)
+			if (winnerMove){
+				moves = [winnerMove]
 			}
 
 
@@ -165,9 +156,9 @@ const app = new Vue({
 			// return this.solve(this.clone(pieces), moves[0])
 			let isOK = false
 			for (let i = 0; i < moves.length; i++){
-				const res = await this.solve(this.clone(pieces), moves[i])
-				if (res){
-					isOK = true
+				const sequence = await this.solve(this.clone(pieces), moves[i])
+				if (sequence){
+					isOK = [moves[i], ...sequence]
 					break
 				}
 			}
@@ -221,8 +212,8 @@ const app = new Vue({
 		// unique fingerprint is the concatenation of the position of each piece
 		getHash: function(pieces){
 			let hash = ''
-			for (const p of pieces){
-				hash += `${p.x}${p.y}`
+			for (let i = 0; i < pieces.length; i++){
+				hash += `${pieces[i].x}${pieces[i].y}`
 			}
 			// console.debug(`hash: ${hash}`)
 			return hash
