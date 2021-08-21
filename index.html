@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>Taquin resolver</title>
+
+		<script src="./lib/vue.min.js"></script>
+		<script src="./assets/js/app.js"></script>
+		<link rel="stylesheet" href="./assets/style.css">
+	</head>
+	<body>
+		<div id="app-ctnr">
+
+			<div id="board">
+				<div v-for="(p, i) in pieces"
+						class="piece"
+						v-bind:class="[p.type]"
+						:style="`--top:${p.y}; --left:${p.x}; --width:${p.w}; --height:${p.h};`"
+				>
+				</div>
+			</div>
+
+		</div>
+
+		<script>
+			app.$mount('#app-ctnr')
+		</script>
+	</body>
+</html>
