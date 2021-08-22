@@ -108,7 +108,7 @@ const app = new Vue({
 				this.shortestSequence = sequence
 
 				// store only solutions that are better than the current best.
-				this.solutions.push({
+				this.solutions.unshift({
 					round: this.round,
 					sequenceLength: sequence.length,
 					duration,
