@@ -14,7 +14,7 @@ body{
 	height: 100vh;
 	display: grid;
 	grid-template-columns: auto;
-	grid-template-rows: 530px 50px auto;
+	grid-template-rows: fit-content(530px) 50px auto;
 }
 
 @media (max-width: 400px){
@@ -38,6 +38,7 @@ body{
 	border: 3px solid black;
 	border-radius: 5px;
 	margin-top: 10px;
+	margin-bottom: 1em;
 	position: relative;
 }
 
