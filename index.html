@@ -27,6 +27,10 @@
 				<button id="solve-btn" v-on:click="startSolve">SOLVE</button>
 			</div>
 
+			<div id="info" v-show="!!round">
+				<label>Round: <label>{{round}}
+			</div>
+
 		</div>
 
 		<script>

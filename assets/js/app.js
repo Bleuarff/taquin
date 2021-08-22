@@ -64,7 +64,7 @@ const app = new Vue({
 			sequence: [],
 			boardStates: [], // list of pieces' fingerprints
 			directions: ['up', 'right', 'down', 'left'],
-			stepInterval: 25,
+			stepInterval: 2,
 	},
 	methods: {
 		startSolve: async function(e){
@@ -89,7 +89,7 @@ const app = new Vue({
 				// check if state is known
 				const boardHash = this.getHash(pieces)
 				if (this.boardStates.includes(boardHash)){
-					console.warn('Circular move !')
+					// console.warn('Circular move !')
 					return false
 				}
 				else
@@ -136,7 +136,7 @@ const app = new Vue({
 					}
 				})
 			}
-			console.debug(`#${this.round} [${lastMove}] moves: ${moves.join('  ')}`)
+			// console.debug(`#${this.round} [${lastMove}] moves: ${moves.join('  ')}`)
 
 			if (moves.length === 0)
 				return false
@@ -203,20 +203,48 @@ const app = new Vue({
 		// clone the pieces array
 		clone: function(pieces){
 			const clone = []
-			for (const p of pieces){
-				clone.push({...p})
+			for (let i = 0; i < pieces.length; i++){
+				clone.push({...pieces[i]})
 			}
 			return clone
 		},
 
-		// unique fingerprint is the concatenation of the position of each piece
+		// fingerprint is the concatenation of the positions of each piece.
+		// Pieces of the same type are fungible: they can be switched with each other,
+		// and the hash remains the same, as the board is considered the same.
+		//
+		// 2 sets of 4 identical pieces means 4!² identical pieces, so that's 500 times less states to search!
 		getHash: function(pieces){
-			let hash = ''
+			let tg = '',
+					rh = ''
+			const vRectPosList = [],
+						squarePosList = []
+
 			for (let i = 0; i < pieces.length; i++){
-				hash += `${pieces[i].x}${pieces[i].y}`
+				const p = pieces[i],
+							pos = p.x.toString() + p.y.toString()
+
+				switch (p.type){
+					case 'rect-v':
+						vRectPosList.push(pos)
+						break
+					case 'square':
+						squarePosList.push(pos)
+						break
+					case 'rect-h':
+						rh = pos
+						break
+					case 'target':
+						tg = pos
+						break
+				}
 			}
-			// console.debug(`hash: ${hash}`)
-			return hash
+
+			// fungible pieces: sort arrays
+			vRectPosList.sort()
+			squarePosList.sort()
+			
+			return tg + rh + vRectPosList.join('') + squarePosList.join('')
 		}
 
 	}
