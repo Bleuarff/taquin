@@ -243,19 +243,6 @@ const app = new Vue({
 					}
 				}
 			}
-			// console.debug(`cells populated`)
-
-			// const free = []
-			//
-			// for (let x = 0; x < this.board.width; x++){
-			// 	for (let y = 0; y < this.board.height; y++){
-			// 		if (cells[x][y] === true){
-			// 			free.push(`x${x}y${y}`)
-			// 		}
-			// 	}
-			// }
-			//
-			// console.debug(`free cells: ${free.join(', ')}`)
 			return cells
 		},
 

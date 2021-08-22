@@ -25,9 +25,9 @@
 
 			<div id="solve-bar">
 				<button id="solve-btn" v-on:click="startSolve" :disabled="!!running">SOLVE</button>
+				<div class="round" v-show="running">Round #{{round}}</div>
 			</div>
 
-			<div v-show="running">Round #{{round}}</div>
 
 			<div class="sols">
 				<div v-for="(sol, i) in solutions" class="info">

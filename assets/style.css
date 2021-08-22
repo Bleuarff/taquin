@@ -4,11 +4,17 @@
 
 body{
 	font-family: Arial;
+	margin: 0;
+	padding: 0;
 }
 
 #app-ctnr{
 	max-width: 400px;
 	margin: auto;
+	height: 100vh;
+	display: grid;
+	grid-template-columns: auto;
+	grid-template-rows: 530px 50px auto;
 }
 
 #board{
@@ -53,17 +59,27 @@ body{
 }
 
 #solve-bar{
-	margin-top: 2em;
+	position: relative;
 }
+
 #solve-btn{
 	font-size: 1.2em;
-	padding: 1em 2em;
+	padding: 0 2em;
 	margin: auto;
 	display: block;
+	height: 100%;
+}
+
+.round{
+	position: absolute;
+	top: 50%;
+	left: 0;
+	transform: translateY(-50%);
 }
 
 .sols{
 	margin-top: 1em;
+	overflow: auto;
 }
 
 .info{
