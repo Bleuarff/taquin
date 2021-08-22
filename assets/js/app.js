@@ -45,7 +45,7 @@ class Move{
 const app = new Vue({
 	data: {
 			board: { width: 4, height: 5},
-			solution: {x:2, y:4},
+			solution: {x:1, y:3},
 
 			pieces: [
 				{w: 1, h: 2, x: 0, y: 0, type: 'rect-v', id: 'r1'},
@@ -58,6 +58,18 @@ const app = new Vue({
 				{w: 1, h: 1, x: 1, y: 4, type: 'square', id: 's2'},
 				{w: 1, h: 1, x: 2, y: 3, type: 'square', id: 's3'},
 				{w: 1, h: 1, x: 2, y: 4, type: 'square', id: 's4'},
+
+				// solved board
+				// {w: 1, h: 2, x: 3, y: 0, type: 'rect-v', id: 'r1'},
+				// {w: 1, h: 2, x: 3, y: 3, type: 'rect-v', id: 'r2'},
+				// {w: 1, h: 2, x: 0, y: 0, type: 'rect-v', id: 'r3'},
+				// {w: 1, h: 2, x: 2, y: 3, type: 'rect-v', id: 'r4'},
+				// {w: 2, h: 1, x: 1, y: 2, type: 'rect-h', id: 'r5'},
+				// {w: 2, h: 2, x: 1, y: 3, type: 'target', id: 't'},
+				// {w: 1, h: 1, x: 1, y: 1, type: 'square', id: 's1'},
+				// {w: 1, h: 1, x: 0, y: 2, type: 'square', id: 's2'},
+				// {w: 1, h: 1, x: 0, y: 4, type: 'square', id: 's3'},
+				// {w: 1, h: 1, x: 0, y: 3, type: 'square', id: 's4'},
 			],
 
 			round: 0,
@@ -79,7 +91,7 @@ const app = new Vue({
 			console.log(this.sequence)
 
 			console.log(`end time: ${endTime}`)
-			const duration = (endTime - startTime) / (3600 * 1e3) // duration in hours
+			const duration = (endTime - startTime) / (60 * 1e3) // duration in minutes
 			console.log(`Duration: ${duration.toFixed(2)}`)
 		},
 		// finds the sequence of moves that resolves the problem, and records it.
