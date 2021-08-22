@@ -17,8 +17,18 @@ body{
 	grid-template-rows: 530px 50px auto;
 }
 
+@media (max-width: 400px){
+	#board{
+		--cell-size: calc(100vw / var(--columns));
+	}
+}
+@media (min-width: 401px){
+	#board{
+		--cell-size: 100px;
+	}
+}
+
 #board{
-	--cell-size: 100px;
 	width: calc(var(--columns) * var(--cell-size));
 	height: calc(var(--rows) * var(--cell-size));
 	display: grid;
@@ -28,7 +38,19 @@ body{
 	border: 3px solid black;
 	border-radius: 5px;
 	margin-top: 10px;
+	position: relative;
+}
 
+#board:after{
+	content: '';
+	position: absolute;
+	bottom: -3px;;
+	left: var(--cell-size);
+
+	display: block;
+	width: calc(2 * var(--cell-size));
+	height: 3px;
+	background: white;
 }
 
 .piece{
