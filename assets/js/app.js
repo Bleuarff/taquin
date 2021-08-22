@@ -44,6 +44,7 @@ class Move{
 
 const app = new Vue({
 	data: {
+			maxMoves: 200,
 			board: { width: 4, height: 5},
 			solution: {x:1, y:3},
 
@@ -77,14 +78,16 @@ const app = new Vue({
 			stepInterval: 1,
 			solutions: [],
 			running: false,
-			refPieces: null
+			refPieces: null,
+			shortestLength: Number.MAX_VALUE,
+			shortestSequence: null
+
 	},
 	created: function(){
 		this.refPieces = this.clone(this.pieces)
 	},
 	methods: {
 		startSolve: async function(e){
-			console.log('start solving...')
 
 			const startTime = Date.now()
 
@@ -98,25 +101,26 @@ const app = new Vue({
 			const endTime = Date.now()
 			this.running = false
 
-			if (Array.isArray(sequence))
-				console.log('VICTORY !')
-			else
-				console.warn('FAIL !')
-
-			if (typeof sequence.join !== 'function')
-				debugger
-
-			console.log(`[${sequence.length} seq]\t` + sequence.join('\t'))
 			const duration = ((endTime - startTime) / 1e3).toFixed(2)
 
-			this.solutions.push({
-				round: this.round,
-				sequenceLength: sequence.length,
-				duration,
-			})
-			console.log(`Duration: ${duration}s`)
+			if (sequence.length < this.shortestLength){
+				this.shortestLength = sequence.length
+				this.shortestSequence = sequence
 
-			if (this.solutions.length < 50)
+				// store only solutions that are better than the current best.
+				this.solutions.push({
+					round: this.round,
+					sequenceLength: sequence.length,
+					duration,
+				})
+
+				console.log(`[${sequence.length} moves][${duration}s]\t` + sequence.join('\t'))
+			}
+			else{
+				console.log(`Solution found in ${sequence.length} moves. ${this.round} rounds and ${duration}s`)
+			}
+
+			if (this.shortestLength > this.maxMoves)
 				this.startSolve()
 		},
 		// finds the sequence of moves that resolves the problem, and records it.
