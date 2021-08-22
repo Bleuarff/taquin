@@ -73,27 +73,51 @@ const app = new Vue({
 			],
 
 			round: 0,
-			sequence: [],
 			boardStates: [], // list of pieces' fingerprints
-			stepInterval: 2,
-			duration: 0,
+			stepInterval: 1,
+			solutions: [],
+			running: false,
+			refPieces: null
+	},
+	created: function(){
+		this.refPieces = this.clone(this.pieces)
 	},
 	methods: {
 		startSolve: async function(e){
 			console.log('start solving...')
 
 			const startTime = Date.now()
-			console.debug(`start time: ${startTime}`)
 
-			this.sequence = await this.solve(this.clone(this.pieces))
+			this.round = 0
+			this.running = true
+			this.boardStates = []
+
+			this.pieces = this.clone(this.refPieces)
+			const sequence = await this.solve(this.pieces)
 
 			const endTime = Date.now()
-			console.log('VICTORY !')
-			console.log(this.sequence)
+			this.running = false
 
-			console.log(`end time: ${endTime}`)
-			this.duration = (endTime - startTime) / 1e3
-			console.log(`Duration: ${this.duration}m`)
+			if (Array.isArray(sequence))
+				console.log('VICTORY !')
+			else
+				console.warn('FAIL !')
+
+			if (typeof sequence.join !== 'function')
+				debugger
+
+			console.log(`[${sequence.length} seq]\t` + sequence.join('\t'))
+			const duration = ((endTime - startTime) / 1e3).toFixed(2)
+
+			this.solutions.push({
+				round: this.round,
+				sequenceLength: sequence.length,
+				duration,
+			})
+			console.log(`Duration: ${duration}s`)
+
+			if (this.solutions.length < 50)
+				this.startSolve()
 		},
 		// finds the sequence of moves that resolves the problem, and records it.
 		// Must detect loops & reverts !!!
@@ -108,10 +132,8 @@ const app = new Vue({
 
 				// check if state is known
 				const boardHash = this.getHash(pieces)
-				if (this.boardStates.includes(boardHash)){
-					// console.warn('Circular move !')
+				if (this.boardStates.includes(boardHash))
 					return false
-				}
 				else
 					this.boardStates.push(boardHash)
 

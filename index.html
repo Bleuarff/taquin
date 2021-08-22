@@ -24,18 +24,18 @@
 
 
 			<div id="solve-bar">
-				<button id="solve-btn" v-on:click="startSolve" :disabled="!!round">SOLVE</button>
+				<button id="solve-btn" v-on:click="startSolve" :disabled="!!running">SOLVE</button>
 			</div>
 
-			<div id="info" v-show="!!round">
-				<div>
-					<label>Round: </label>{{round}}
-				</div>
-				<div v-if="duration">
-					<label>Duration: </label>{{duration.toFixed(2)}}s
+			<div v-show="running">Round #{{round}}</div>
+
+			<div class="sols">
+				<div v-for="(sol, i) in solutions" class="info">
+					<span> #{{sol.round}}</span>
+					<span>{{sol.duration}}s</span>
+					<span>{{sol.sequenceLength}} moves</span>
 				</div>
 			</div>
-
 		</div>
 
 		<script>
