@@ -63,7 +63,6 @@ const app = new Vue({
 			round: 0,
 			sequence: [],
 			boardStates: [], // list of pieces' fingerprints
-			directions: ['up', 'right', 'down', 'left'],
 			stepInterval: 2,
 	},
 	methods: {
@@ -127,14 +126,26 @@ const app = new Vue({
 					right = right && cells[p.x + p.w][y] === true
 				}
 
-				// create the allowed moves, with additional checks
-				;[up, right, down, left].forEach((ok, i) => {
-					if (ok){
-						const m = new Move(p, this.directions[i])
-						if (!m.isReverse(lastMove))
-							moves.push(m)
-					}
-				})
+				if (up){
+					const m = new Move(p, 'up')
+					if (!m.isReverse(lastMove))
+						moves.push(m)
+				}
+				if (right){
+					const m = new Move(p, 'right')
+					if (!m.isReverse(lastMove))
+						moves.push(m)
+				}
+				if (down){
+					const m = new Move(p, 'down')
+					if (!m.isReverse(lastMove))
+						moves.push(m)
+				}
+				if (left){
+					const m = new Move(p, 'left')
+					if (!m.isReverse(lastMove))
+						moves.push(m)
+				}
 			}
 			// console.debug(`#${this.round} [${lastMove}] moves: ${moves.join('  ')}`)
 
@@ -243,7 +254,7 @@ const app = new Vue({
 			// fungible pieces: sort arrays
 			vRectPosList.sort()
 			squarePosList.sort()
-			
+
 			return tg + rh + vRectPosList.join('') + squarePosList.join('')
 		}
 
