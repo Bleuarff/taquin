@@ -36,7 +36,7 @@ body{
 	grid-template-rows: repeat(var(--rows), auto);
 
 	border: 3px solid black;
-	border-radius: 5px;
+	border-radius: 8px;
 	margin-top: 10px;
 	margin-bottom: 1em;
 	position: relative;
@@ -96,9 +96,11 @@ body{
 
 .round{
 	position: absolute;
-	top: 50%;
-	left: 0;
-	transform: translateY(-50%);
+	bottom: 1px;
+	font-size: .9em;
+}
+#board-ctnr{
+	position: relative;
 }
 
 .sols{
