@@ -24,11 +24,13 @@
 
 
 			<div id="solve-bar">
-				<button id="solve-btn" v-on:click="startSolve">SOLVE</button>
+				<button id="solve-btn" v-on:click="startSolve" :disabled="!!round">SOLVE</button>
 			</div>
 
 			<div id="info" v-show="!!round">
-				<label>Round: <label>{{round}}
+				<div>
+					<label>Round: </label>{{round}}
+				</div>
 			</div>
 
 		</div>
