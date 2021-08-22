@@ -75,7 +75,8 @@ const app = new Vue({
 			round: 0,
 			sequence: [],
 			boardStates: [], // list of pieces' fingerprints
-			stepInterval: 2
+			stepInterval: 2,
+			duration: 0,
 	},
 	methods: {
 		startSolve: async function(e){
@@ -91,8 +92,8 @@ const app = new Vue({
 			console.log(this.sequence)
 
 			console.log(`end time: ${endTime}`)
-			const duration = (endTime - startTime) / (60 * 1e3) // duration in minutes
-			console.log(`Duration: ${duration.toFixed(2)}`)
+			this.duration = (endTime - startTime) / 1e3
+			console.log(`Duration: ${this.duration}m`)
 		},
 		// finds the sequence of moves that resolves the problem, and records it.
 		// Must detect loops & reverts !!!
@@ -179,12 +180,17 @@ const app = new Vue({
 			}
 
 
-			// this.sequence.push(moves[0].toString())
-
 			if (this.stepInterval)
 				await new Promise(resolve => {setTimeout(resolve, this.stepInterval)})
 
-			// return this.solve(this.clone(pieces), moves[0])
+			// Randomize moves order
+			moves.sort((a, b) => {
+				if (Math.random() * 10 >= 5)
+					return -1
+				else
+					return 1
+			})
+
 			let isOK = false
 			for (let i = 0; i < moves.length; i++){
 				const sequence = await this.solve(this.clone(pieces), moves[i])

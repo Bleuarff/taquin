@@ -6,6 +6,11 @@ body{
 	font-family: Arial;
 }
 
+#app-ctnr{
+	max-width: 400px;
+	margin: auto;
+}
+
 #board{
 	--cell-size: 100px;
 	width: calc(var(--columns) * var(--cell-size));
@@ -54,10 +59,13 @@ body{
 	font-size: 1.2em;
 	padding: 1em 2em;
 	margin: auto;
-	position: relative;
-	left: 3em;
+	display: block;
 }
 
 #info{
 	margin-top: 2em;
+}
+
+#info > *{
+	margin-bottom: 1em;
 }

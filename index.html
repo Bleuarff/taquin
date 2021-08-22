@@ -31,6 +31,9 @@
 				<div>
 					<label>Round: </label>{{round}}
 				</div>
+				<div v-if="duration">
+					<label>Duration: </label>{{duration.toFixed(2)}}s
+				</div>
 			</div>
 
 		</div>
