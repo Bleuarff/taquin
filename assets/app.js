@@ -82,6 +82,10 @@ const app = new Vue({
 			refPieces: null, // copy of initial states, as pieces is mutated to show progress.
 			bestSequence: null,
 			maxDepth: MAX_DEPTH, // max allowed depth in recursion before giving up on the path
+
+			uiRounds: 0, // approx. number of moves processed.
+			uiStates: 0, // approx. number of unique hashes encountered
+			uiSubsamplingFactor: 50, // ui values are updated only 1/N times,
 	},
 	created: function(){
 		this.refPieces = this.clone(this.pieces)
@@ -92,7 +96,7 @@ const app = new Vue({
 			const startTime = Date.now()
 
 			// reset various counters
-			this.round = 0
+			this.round = this.uiRounds = this.uiStates = 0
 			this.running = true
 			this.boardStates = []
 
@@ -134,6 +138,10 @@ const app = new Vue({
 		// finds the sequence of moves that resolves the problem, and records it.
 		solve: async function(pieces, lastMove, depthCounter = 0){
 			this.round++
+			if (this.round % this.uiSubsamplingFactor === 0){
+				this.uiRounds = this.round
+				this.uiStates = this.boardStates.length
+			}
 
 			// give up on path if we're in too deep
 			if (++depthCounter > this.maxDepth){
