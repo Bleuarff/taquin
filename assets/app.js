@@ -76,7 +76,7 @@ const app = new Vue({
 
 			solutions: [], // list of found solutions. Sorted  by sequence length, ascending.
 			round: 0, // number of states analyzed this round
-			boardStates: [], // list of pieces' fingerprints
+			boardStates: null, // list of pieces' fingerprints
 			stepInterval: 1,
 			running: false,
 			refPieces: null, // copy of initial states, as pieces is mutated to show progress.
@@ -98,7 +98,7 @@ const app = new Vue({
 			// reset various counters
 			this.round = this.uiRounds = this.uiStates = 0
 			this.running = true
-			this.boardStates = []
+			this.boardStates = new Set()
 
 			this.pieces = this.clone(this.refPieces)
 			const sequence = await this.solve(this.pieces)
@@ -140,7 +140,7 @@ const app = new Vue({
 			this.round++
 			if (this.round % this.uiSubsamplingFactor === 0){
 				this.uiRounds = this.round
-				this.uiStates = this.boardStates.length
+				this.uiStates = this.boardStates.size
 			}
 
 			// give up on path if we're in too deep
@@ -156,10 +156,10 @@ const app = new Vue({
 
 				// check if state is known
 				const boardHash = this.getHash(pieces)
-				if (this.boardStates.includes(boardHash))
+				if (this.boardStates.has(boardHash))
 					return false // known state, no need to go further (avoids loops in the recursion)
 				else
-					this.boardStates.push(boardHash) // store hash for board state, won't be processed again
+					this.boardStates.add(boardHash) // store hash for board state, won't be processed again
 
 				this.pieces = pieces // update UI
 
