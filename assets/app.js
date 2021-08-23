@@ -136,7 +136,7 @@ const app = new Vue({
 
 
 		// finds the sequence of moves that resolves the problem, and records it.
-		solve: async function(pieces, lastMove, depthCounter = 0){
+		solve: async function(prevPieces, lastMove, depthCounter = 0){
 			this.round++
 			if (this.round % this.uiSubsamplingFactor === 0){
 				this.uiRounds = this.round
@@ -147,6 +147,8 @@ const app = new Vue({
 			if (++depthCounter > this.maxDepth){
 				return false
 			}
+
+			const pieces = this.clone(prevPieces)
 
 			// apply current move to pieces
 			if (lastMove){
@@ -247,7 +249,7 @@ const app = new Vue({
 			// calls each possible move.
 			// On sucess, the recursion's return chain results in the sequence of moves to solve the taquin.
 			for (let i = 0; i < moves.length; i++){
-				const sequence = await this.solve(this.clone(pieces), moves[i], depthCounter)
+				const sequence = await this.solve(pieces, moves[i], depthCounter)
 				if (sequence){
 					isOK = [moves[i], ...sequence]
 					break
