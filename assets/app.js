@@ -79,8 +79,7 @@ const app = new Vue({
 			solutions: [],
 			running: false,
 			refPieces: null,
-			shortestLength: Number.MAX_VALUE,
-			shortestSequence: null
+			bestSequence: null
 
 	},
 	created: function(){
@@ -103,9 +102,9 @@ const app = new Vue({
 
 			const duration = ((endTime - startTime) / 1e3).toFixed(2)
 
-			if (sequence.length < this.shortestLength){
-				this.shortestLength = sequence.length
-				this.shortestSequence = sequence
+			const upperBoundary = this.bestSequence?.length || Number.MAX_SAFE_INTEGER
+			if (sequence.length < upperBoundary){
+				this.bestSequence = sequence
 
 				// store only solutions that are better than the current best.
 				this.solutions.unshift({
@@ -120,9 +119,11 @@ const app = new Vue({
 				console.log(`Solution found in ${sequence.length} moves. ${this.round} rounds and ${duration}s`)
 			}
 
-			if (this.shortestLength > this.maxMoves)
+			if (this.bestSequence.length > this.maxMoves)
 				this.startSolve()
 		},
+
+
 		// finds the sequence of moves that resolves the problem, and records it.
 		// Must detect loops & reverts !!!
 		solve: async function(pieces, lastMove){
@@ -295,6 +296,23 @@ const app = new Vue({
 			squarePosList.sort()
 
 			return tg + rh + vRectPosList.join('') + squarePosList.join('')
+		},
+
+		// copy sequence to clipboard
+		copySequence: function(){
+			if (! navigator.clipboard){
+				alert('Clipboard API not supported')
+				return
+			}
+
+			let content
+			if (this.bestSequence){
+				content = `[${this.bestSequence.length}] ` + this.bestSequence.join('\t')
+			}
+			else
+				content = 'No sequence found'
+
+			navigator.clipboard.writeText(content).then(() => {})
 		}
 
 	}

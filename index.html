@@ -31,12 +31,12 @@
 				<button id="solve-btn" v-on:click="startSolve" :disabled="!!running">SOLVE</button>
 			</div>
 
-
 			<div class="sols">
 				<div v-for="(sol, i) in solutions" class="info">
 					<span> #{{sol.round}}</span>
 					<span>{{sol.duration}}s</span>
 					<span>{{sol.sequenceLength}} moves</span>
+					<button v-if="i === 0" v-on:click="copySequence" class="copy-btn">&#x1F4CB;</button>
 				</div>
 			</div>
 		</div>
