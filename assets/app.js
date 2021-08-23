@@ -85,7 +85,7 @@ const app = new Vue({
 
 			uiRounds: 0, // approx. number of moves processed.
 			uiStates: 0, // approx. number of unique hashes encountered
-			uiSubsamplingFactor: 50, // ui values are updated only 1/N times,
+			uiSubsamplingFactor: 100, // ui values are updated only 1/N times,
 	},
 	created: function(){
 		this.refPieces = this.clone(this.pieces)
