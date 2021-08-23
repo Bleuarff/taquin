@@ -1,5 +1,7 @@
 'use strict'
 
+const MAX_DEPTH = 1000
+
 class Move{
 		constructor(piece, direction){
 			this.id = piece.id
@@ -44,7 +46,6 @@ class Move{
 
 const app = new Vue({
 	data: {
-			maxMoves: 200,
 			board: { width: 4, height: 5},
 			solution: {x:1, y:3},
 
@@ -73,14 +74,14 @@ const app = new Vue({
 				// {w: 1, h: 1, x: 0, y: 3, type: 'square', id: 's4'},
 			],
 
-			round: 0,
+			solutions: [], // list of found solutions. Sorted  by sequence length, ascending.
+			round: 0, // number of states analyzed this round
 			boardStates: [], // list of pieces' fingerprints
 			stepInterval: 1,
-			solutions: [],
 			running: false,
-			refPieces: null,
-			bestSequence: null
-
+			refPieces: null, // copy of initial states, as pieces is mutated to show progress.
+			bestSequence: null,
+			maxDepth: MAX_DEPTH, // max allowed depth in recursion before giving up on the path
 	},
 	created: function(){
 		this.refPieces = this.clone(this.pieces)
@@ -90,6 +91,7 @@ const app = new Vue({
 
 			const startTime = Date.now()
 
+			// reset various counters
 			this.round = 0
 			this.running = true
 			this.boardStates = []
@@ -102,9 +104,14 @@ const app = new Vue({
 
 			const duration = ((endTime - startTime) / 1e3).toFixed(2)
 
-			const upperBoundary = this.bestSequence?.length || Number.MAX_SAFE_INTEGER
-			if (sequence.length < upperBoundary){
-				this.bestSequence = sequence
+			const upperBoundary = this.bestSequence?.length || this.maxDepth
+
+			if (!sequence){
+				console.log(`No solution found, dead-end after ${this.round} rounds.`)
+			}
+			else if (sequence.length <= upperBoundary){
+				this.bestSequence = sequence // records the best sequence.
+				this.maxDepth = sequence.length // lower the bar for the next search
 
 				// store only solutions that are better than the current best.
 				this.solutions.unshift({
@@ -119,17 +126,21 @@ const app = new Vue({
 				console.log(`Solution found in ${sequence.length} moves. ${this.round} rounds and ${duration}s`)
 			}
 
-			if (this.bestSequence.length > this.maxMoves)
-				this.startSolve()
+			// ad infinitum...
+			this.startSolve()
 		},
 
 
 		// finds the sequence of moves that resolves the problem, and records it.
-		// Must detect loops & reverts !!!
-		solve: async function(pieces, lastMove){
+		solve: async function(pieces, lastMove, depthCounter = 0){
 			this.round++
 
-			// apply last move to pieces
+			// give up on path if we're in too deep
+			if (++depthCounter > this.maxDepth){
+				return false
+			}
+
+			// apply current move to pieces
 			if (lastMove){
 				const piece = pieces.find(p => p.id == lastMove.id)
 				piece.x = lastMove.toX
@@ -138,9 +149,9 @@ const app = new Vue({
 				// check if state is known
 				const boardHash = this.getHash(pieces)
 				if (this.boardStates.includes(boardHash))
-					return false
+					return false // known state, no need to go further (avoids loops in the recursion)
 				else
-					this.boardStates.push(boardHash)
+					this.boardStates.push(boardHash) // store hash for board state, won't be processed again
 
 				this.pieces = pieces // update UI
 
@@ -149,11 +160,12 @@ const app = new Vue({
 					return [lastMove]
 			}
 
-			// find free cells
+			// maps pieces to board, aka a [x][y] double array. Each cell is true if free, false otherwise.
 			const cells = this.mapCells(pieces)
 			let moves = []
 
-			// list possible moves
+			// list possible moves: for each piece, each if can move up, right, down or left.
+			// Create a big array with all immediate moves possible from current state.
 			for (let i = 0; i < pieces.length; i++){
 				const p = pieces[i]
 				let up = true, down = true, left = true, right = true
@@ -197,6 +209,7 @@ const app = new Vue({
 			}
 			// console.debug(`#${this.round} [${lastMove}] moves: ${moves.join('  ')}`)
 
+			// early return if no move possible
 			if (moves.length === 0)
 				return false
 
@@ -206,7 +219,7 @@ const app = new Vue({
 				moves = [winnerMove]
 			}
 
-
+			// allow delay for visualization, and not blocking thread.
 			if (this.stepInterval)
 				await new Promise(resolve => {setTimeout(resolve, this.stepInterval)})
 
@@ -222,14 +235,18 @@ const app = new Vue({
 			})
 
 			let isOK = false
+
+			// calls each possible move.
+			// On sucess, the recursion's return chain results in the sequence of moves to solve the taquin.
 			for (let i = 0; i < moves.length; i++){
-				const sequence = await this.solve(this.clone(pieces), moves[i])
+				const sequence = await this.solve(this.clone(pieces), moves[i], depthCounter)
 				if (sequence){
 					isOK = [moves[i], ...sequence]
 					break
 				}
 			}
 
+			// returns the current sequence
 			return isOK
 		},
 
