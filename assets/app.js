@@ -111,7 +111,7 @@ const app = new Vue({
 			const upperBoundary = this.bestSequence?.length || this.maxDepth
 
 			if (!sequence){
-				console.log(`No solution found, dead-end after ${this.round} rounds.`)
+				console.log(`No solution found, dead-end after ${this.round} rounds and ${duration}s.`)
 			}
 			else if (sequence.length <= upperBoundary){
 				this.bestSequence = sequence // records the best sequence.
@@ -163,14 +163,16 @@ const app = new Vue({
 				else
 					this.boardStates.add(boardHash) // store hash for board state, won't be processed again
 
-				this.pieces = pieces // update UI
+				if (this.round % 10 === 0) // slow down refresh rate
+					this.pieces = pieces // update UI
 
 				// check winning condition
 				if (lastMove && lastMove.id === 't' && lastMove.toX === this.solution.x && lastMove.toY === this.solution.y)
 					return [lastMove]
 			}
 
-			// maps pieces to board, aka a [x][y] double array. Each cell is true if free, false otherwise.
+			// maps free cells on board. An array of bytes, where each element is 0 if cell is free, 255 otherwise.
+			// array index is obtained from cell coordinates = idx = x * board_height + y
 			const cells = this.mapCells(pieces)
 			let moves = []
 
@@ -188,12 +190,12 @@ const app = new Vue({
 
 				// check if move possible
 				for (let x = p.x; x < p.x + p.w; x++){
-					up = up && cells[x][p.y - 1] === true
-					down = down && cells[x][p.y + p.h] === true
+					up = up && cells[x * this.board.height + p.y - 1] === 0
+					down = down && cells[x * this.board.height + p.y + p.h] === 0
 				}
 				for (let y = p.y; y < p.y + p.h; y++){
-					left = left && cells[p.x - 1][y] === true
-					right = right && cells[p.x + p.w][y] === true
+					left = left && cells[(p.x - 1) * this.board.height + y] === 0
+					right = right && cells[(p.x + p.w) * this.board.height + y] === 0
 				}
 
 				if (up){
@@ -260,21 +262,16 @@ const app = new Vue({
 			return isOK
 		},
 
+		// returns a Uint8Array. Each element is a cell of the board, set to 0 free, 255 otherwise.
 		mapCells: function(pieces){
-			const cells = []
-			for (let x = 0; x < this.board.width; x++){
-				cells[x] = []
+			const cells = new Uint8Array(this.board.width * this.board.height)
 
-				for (let y = 0; y < this.board.height; y++){
-					cells[x][y] = true;
-				}
-			}
-			// console.debug(`cells initialized`)
-
-			for (const p of pieces){
-				for(let x = p.x; x < (p.x + p.w); x++){
+			for (let i = 0; i < pieces.length; i++){
+				const p = pieces[i]
+				for (let x = p.x; x < (p.x + p.w); x++){
 					for (let y = p.y; y < (p.y + p.h); y++){
-						cells[x][y] = false
+						// console.log(`x:${x} y:${y}\t${x * this.board.width + y}`)
+						cells[x * this.board.height + y] = 255
 					}
 				}
 			}
