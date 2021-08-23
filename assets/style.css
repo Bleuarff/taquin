@@ -46,7 +46,7 @@ body{
 	content: '';
 	position: absolute;
 	bottom: -3px;;
-	left: var(--cell-size);
+	left: calc(var(--cell-size) - 2px);
 
 	display: block;
 	width: calc(2 * var(--cell-size));

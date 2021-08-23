@@ -210,12 +210,15 @@ const app = new Vue({
 			if (this.stepInterval)
 				await new Promise(resolve => {setTimeout(resolve, this.stepInterval)})
 
-			// Randomize moves order
+			// Sort array: moves for target piece are put first (and randomized between them),
+			// other moves are randomized. No guarantee of it being bias-free.
 			moves.sort((a, b) => {
-				if (Math.random() * 10 >= 5)
+				if (a.id === 't' && b.id !== 't')
 					return -1
-				else
+				else if (a.id !== 't' && b.id === 't')
 					return 1
+				else
+					return (Math.random() * 10 >= 5) ? 1 : -1
 			})
 
 			let isOK = false
