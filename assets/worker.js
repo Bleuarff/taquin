@@ -52,6 +52,9 @@ let maxDepth = 1000 // max recursion depth authorized.Above that and we stop loo
 
 let solution = null // desired location to consider the puzzle resolved.
 
+const refreshRate =  8 // in Hz
+let lastRefresh = 0
+
 // board dimensions
 let boardWidth = 0,
 		boardHeight = 0
@@ -150,14 +153,18 @@ async function solve(prevPieces, lastMove, depthCounter = 0){
 	}
 
 	// slow down refresh rate
-	if (trialRounds % 10 === 0){
+	const now = Date.now()
+
+	if (now - lastRefresh >= (1000 / refreshRate)){
 		postMessage({
 			name: 'tick',
 			trial: trialsCounter,
 			rounds: trialRounds,
 			states: boardStates.size,
+			depth: depthCounter,
 			pieces
 		})
+		lastRefresh = now
 	}
 
 	// maps free cells on board. An array of bytes, where each element is 0 if cell is free, 255 otherwise.

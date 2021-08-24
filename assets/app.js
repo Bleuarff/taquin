@@ -89,8 +89,9 @@ const app = new Vue({
 		},
 
 		updateStats: function(data){
-			this.uiRounds = data.rounds
-			this.uiStates = data.states
+			// for the sake of simplicity, some number are rounded to nearest 10 or 100.
+			this.uiRounds = Math.round(data.rounds / 100) * 100
+			this.uiStates = Math.round(data.states / 10) * 10
 			this.pieces = data.pieces
 			this.trialsCounter = data.trial
 		},
