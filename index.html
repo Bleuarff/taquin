@@ -36,7 +36,7 @@
 
 			<div class="solutions-ctnr">
 				<div v-for="(sol, i) in solutions" class="solution">
-					<span> #{{sol.round}}</span>
+					<span>{{sol.trial}}#{{sol.round}}</span>
 					<span>{{sol.duration}}s</span>
 					<span>{{sol.sequenceLength}} moves</span>
 					<button v-if="i === 0" v-on:click="copySequence" class="copy-btn">&#x1F4CB;</button>

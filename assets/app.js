@@ -1,6 +1,7 @@
 'use strict'
 
 const MAX_DEPTH = 1000
+
 const worker = new Worker('./assets/worker.js')
 
 /* app */
@@ -52,14 +53,10 @@ const app = new Vue({
 
 		worker.onmessage = (e) => {
 			if (e.data.name === 'solve' && e.data.sequence){
-				debugger
-				this.showSuccess(e.data)
+				this.handleSuccess(e.data)
 			}
 			else if (e.data.name === 'tick'){
-				this.uiRounds = e.data.rounds
-				this.uiStates = e.data.states
-				this.pieces = e.data.pieces
-				this.trialsCounter = e.data.trial
+				this.updateStats(e.data)
 			}
 		}
 	},
@@ -75,15 +72,27 @@ const app = new Vue({
 			this.running = true
 		},
 
-		showSuccess: function(args){
-			console.log('show success')
+		// adds solution to list, store the sequence.
+		handleSuccess: function(args){
 			this.bestSequence = args.sequence
-			this.solutions.unshift({
+			const newSolution = {
 				round: args.rounds,
+				trial: args.trial,
 				sequenceLength: this.bestSequence.length,
 				duration: (args.duration / 1e3).toFixed(2)
-			})
+			}
 
+			// limit the number of solutions we store & display
+			this.solutions = [newSolution, ...this.solutions.slice(0, 4)]
+
+			document.title = document.title.replace(/( \[\d+\])?$/, ` [${newSolution.sequenceLength}]`)
+		},
+
+		updateStats: function(data){
+			this.uiRounds = data.rounds
+			this.uiStates = data.states
+			this.pieces = data.pieces
+			this.trialsCounter = data.trial
 		},
 
 		// clone the pieces array
