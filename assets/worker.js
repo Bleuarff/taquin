@@ -44,11 +44,12 @@ class Move{
 
 
 /******************************************************************************/
+const MAX_DEPTH = 1000
 
 let boardStates = null  // list of pieces' fingerprints
 let trialsCounter = 0 // number of times we've tried to resolve the puzzle
 let trialRounds = 0 // how many rounds when into the current counter (set after solve)
-let maxDepth = 1000 // max recursion depth authorized.Above that and we stop looking further down the search tree.
+let maxDepth = 0 // max recursion depth authorized.Above that and we stop looking further down the search tree.
 
 let solution = null // desired location to consider the puzzle resolved.
 
@@ -82,6 +83,7 @@ async function startSolve(args){
 	boardWidth = args.board.width
 	boardHeight = args.board.height
 	solution = args.solution
+	maxDepth = args.maxDepth || MAX_DEPTH
 
 	// Loop ad infinitum (until reload, or when we implement a stop feature)
 	while(true){

@@ -11,7 +11,12 @@
 		<link rel="icon" href="data:,">
 	</head>
 	<body>
+
+
 		<div id="app-ctnr">
+			<div id="depth-bg">
+				<div id="depth-mask" :style="`--depth-mask-scale:${depthMaxScale.toFixed(2)};`"></div>
+			</div>
 
 			<div id="board-ctnr">
 				<div id="board" :style="`--rows:${board.height}; --columns:${board.width}`">
@@ -25,8 +30,8 @@
 				</div>
 
 				<div class="rt-info" v-show="running">
-					<span>Round {{trialsCounter}}#{{uiRounds}}</span>
-					<span>{{uiStates}} States</span>
+					<span>Round {{trialsCounter}}#{{roundCounter}}</span>
+					<span>{{statesCounter}} States</span>
 				</div>
 			</div>
 

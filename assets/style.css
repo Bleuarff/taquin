@@ -133,3 +133,23 @@ body{
 .copy-btn{
 	align-self: center;
 }
+
+#depth-bg{
+	--height: 4px;
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100vw;
+	height: var(--height);
+	background: linear-gradient(90deg, green, yellow, red);
+}
+#depth-mask{
+	position: absolute;
+	top: 0;
+	right: 0;
+	height: var(--height);
+	background: white;
+	width: 100%;
+	transform-origin: right;
+	transform: scaleX(var(--depth-mask-scale, 1));
+}

@@ -43,8 +43,9 @@ const app = new Vue({
 			bestSequence: null,
 			maxDepth: MAX_DEPTH, // max allowed depth in recursion before giving up on the path
 
-			uiRounds: 0, // approx. number of moves processed.
-			uiStates: 0, // approx. number of unique hashes encountered
+			roundCounter: 0, // approx. number of moves processed.
+			statesCounter: 0, // approx. number of unique hashes encountered
+			depthMaxScale: 1, // approx. current depth
 			uiSubsamplingFactor: 100, // ui values are updated only 1/N times,
 			trialsCounter: 0 // number of runs we've done
 	},
@@ -66,7 +67,8 @@ const app = new Vue({
 				action: 'start',
 				board: this.board,
 				pieces: this.refPieces,
-				solution: this.solution
+				solution: this.solution,
+				maxDepth: this.maxDepth
 			})
 
 			this.running = true
@@ -86,14 +88,17 @@ const app = new Vue({
 			this.solutions = [newSolution, ...this.solutions.slice(0, 4)]
 
 			document.title = document.title.replace(/( \[\d+\])?$/, ` [${newSolution.sequenceLength}]`)
+			this.maxDepth = newSolution.sequenceLength
 		},
 
 		updateStats: function(data){
 			// for the sake of simplicity, some number are rounded to nearest 10 or 100.
-			this.uiRounds = Math.round(data.rounds / 100) * 100
-			this.uiStates = Math.round(data.states / 10) * 10
+			this.roundCounter = Math.round(data.rounds / 100) * 100
+			this.statesCounter = Math.round(data.states / 10) * 10
 			this.pieces = data.pieces
 			this.trialsCounter = data.trial
+
+			this.depthMaxScale = (this.maxDepth - data.depth) / this.maxDepth
 		},
 
 		// clone the pieces array
