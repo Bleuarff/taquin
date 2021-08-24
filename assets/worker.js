@@ -92,7 +92,8 @@ async function startSolve(args){
 		const sequence = await solve(pieces)
 		performance.measure('solve-duration', 'solve-start')
 
-		const duration = performance.getEntriesByName('solve-duration', 'measure')[0].duration
+		const perfEntries = performance.getEntriesByName('solve-duration', 'measure'),
+					duration = perfEntries[perfEntries.length -1].duration
 
 		const results = {
 			name: 'solve',
@@ -125,7 +126,7 @@ async function solve(prevPieces, lastMove, depthCounter = 0){
 	if (++depthCounter > maxDepth){
 		return false
 	}
-	
+
 	trialRounds++
 
 	const pieces = clone(prevPieces)
