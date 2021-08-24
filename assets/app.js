@@ -44,6 +44,10 @@ class Move{
 		}
 }
 
+/* Global variables */
+let boardStates = null  // list of pieces' fingerprints
+
+/* app */
 const app = new Vue({
 	data: {
 			board: { width: 4, height: 5},
@@ -76,7 +80,6 @@ const app = new Vue({
 
 			solutions: [], // list of found solutions. Sorted  by sequence length, ascending.
 			round: 0, // number of states analyzed this round
-			boardStates: null, // list of pieces' fingerprints
 			stepInterval: 1,
 			running: false,
 			refPieces: null, // copy of initial states, as pieces is mutated to show progress.
@@ -86,19 +89,20 @@ const app = new Vue({
 			uiRounds: 0, // approx. number of moves processed.
 			uiStates: 0, // approx. number of unique hashes encountered
 			uiSubsamplingFactor: 100, // ui values are updated only 1/N times,
+			trialsCounter: 0 // number of runs we've done
 	},
 	created: function(){
 		this.refPieces = this.clone(this.pieces)
 	},
 	methods: {
 		startSolve: async function(e){
-
+			++this.trialsCounter
 			const startTime = Date.now()
 
 			// reset various counters
 			this.round = this.uiRounds = this.uiStates = 0
 			this.running = true
-			this.boardStates = new Set()
+			boardStates = new Set()
 
 			this.pieces = this.clone(this.refPieces)
 			const sequence = await this.solve(this.pieces)
@@ -123,7 +127,7 @@ const app = new Vue({
 					sequenceLength: sequence.length,
 					duration,
 				})
-
+				console.clear()
 				console.log(`[${sequence.length} moves][${duration}s]\t` + sequence.join('\t'))
 			}
 			else{
@@ -140,7 +144,7 @@ const app = new Vue({
 			this.round++
 			if (this.round % this.uiSubsamplingFactor === 0){
 				this.uiRounds = this.round
-				this.uiStates = this.boardStates.size
+				this.uiStates = boardStates.size
 			}
 
 			// give up on path if we're in too deep
@@ -158,10 +162,10 @@ const app = new Vue({
 
 				// check if state is known
 				const boardHash = this.getHash(pieces)
-				if (this.boardStates.has(boardHash))
+				if (boardStates.has(boardHash))
 					return false // known state, no need to go further (avoids loops in the recursion)
 				else
-					this.boardStates.add(boardHash) // store hash for board state, won't be processed again
+					boardStates.add(boardHash) // store hash for board state, won't be processed again
 
 				if (this.round % 10 === 0) // slow down refresh rate
 					this.pieces = pieces // update UI

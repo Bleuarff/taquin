@@ -107,12 +107,12 @@ body{
 	position: relative;
 }
 
-.sols{
+.solutions-ctnr{
 	margin-top: 1em;
 	overflow: auto;
 }
 
-.info{
+.solution{
 	display: flex;
 	flex-flow: row nowrap;
 	justify-content: space-between;
@@ -120,6 +120,10 @@ body{
 	padding: 1em;
 	margin-bottom: .5em;
 	border-radius: 5px;
+	align-items: baseline;
+}
+.solution:first-child span:last-of-type{
+	font-size: 1.2em;
 }
 
 #info > *{
@@ -127,4 +131,5 @@ body{
 }
 
 .copy-btn{
+	align-self: center;
 }

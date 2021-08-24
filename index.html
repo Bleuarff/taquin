@@ -25,7 +25,7 @@
 				</div>
 
 				<div class="rt-info" v-show="running">
-					<span>Round #{{uiRounds}}</span>
+					<span>Round {{trialsCounter}}#{{uiRounds}}</span>
 					<span>{{uiStates}} States</span>
 				</div>
 			</div>
@@ -34,8 +34,8 @@
 				<button id="solve-btn" v-on:click="startSolve" :disabled="!!running">SOLVE</button>
 			</div>
 
-			<div class="sols">
-				<div v-for="(sol, i) in solutions" class="info">
+			<div class="solutions-ctnr">
+				<div v-for="(sol, i) in solutions" class="solution">
 					<span> #{{sol.round}}</span>
 					<span>{{sol.duration}}s</span>
 					<span>{{sol.sequenceLength}} moves</span>
