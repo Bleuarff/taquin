@@ -5,6 +5,7 @@ class Move{
 			this.id = piece.id
 			this.fromX = piece.x
 			this.fromY = piece.y
+			this.combined = false // whether move is combination of 2.
 
 			switch(direction){
 				case 'up':
@@ -24,12 +25,14 @@ class Move{
 					this.toY = piece.y
 					break
 				default:
-					console.error('Unknown move ${direction}')
+					// neutral move
+					this.toX = this.fromX
+					this.toY = this.fromY
 			}
 		}
 
 		toString(){
-			return `${this.id}:${this.fromX},${this.fromY}→${this.toX},${this.toY}`
+			return `${this.id}:${this.fromX},${this.fromY}→${this.toX},${this.toY}${this.combined ? '[C]': ''}`
 		}
 
 		// whether the given move and the current instance are the reverse of each other,
@@ -95,24 +98,28 @@ async function startSolve(args){
 		trialRounds = 0
 
 		performance.mark('solve-start')
-		const sequence = await solve(pieces)
+		let sequence = await solve(pieces)
 		performance.measure('solve-duration', 'solve-start')
 
 		const perfEntries = performance.getEntriesByName('solve-duration', 'measure'),
 					duration = perfEntries[perfEntries.length -1].duration
 
-		if (sequence && sequence.length < maxDepth){
-			maxDepth = sequence.length // lower the bar for the next search
+		if (sequence){
+			sequence = mergeMoves(sequence)
 
-			console.clear()
-			console.log(`[${sequence.length} moves][${duration.toFixed(0)}ms]\t` + sequence.join('\t'))
-			postMessage({
-				name: 'solve',
-				trial: trialsCounter,
-				rounds: trialRounds,
-				duration,
-				sequence
-			})
+			if (sequence.length < maxDepth){
+				maxDepth = sequence.length // lower the bar for the next search
+
+				console.clear()
+				console.log(`[${sequence.length} moves][${duration.toFixed(0)}ms]\t` + sequence.join('\t'))
+				postMessage({
+					name: 'solve',
+					trial: trialsCounter,
+					rounds: trialRounds,
+					duration,
+					sequence
+				})
+			}
 		}
 
 
@@ -317,4 +324,40 @@ function getHash(pieces){
 	squarePosList.sort()
 
 	return tg + rh + vRectPosList.join('') + squarePosList.join('')
+}
+
+// Looks at solving sequence and looks for moves to merge.
+// A merge is possible when the 2 moves are:
+// - are adjacent,
+// - for the same piece,
+// - and their combination is a straight line, either horizontal or vertical.
+//
+// If so, we replace these 2 items in array with a single move object, combiningthe 2 moves.
+function mergeMoves(sequence){
+	let length = sequence.length - 1
+
+	for (let i = 0; i < length; i++){
+		const cur = sequence[i],
+					nxt = sequence[i+1]
+
+		const canMerge = nxt && nxt.id === cur.id
+										&& cur.toX === nxt.fromX
+										&& cur.toY === nxt.fromY
+										&& (cur.fromX === nxt.toX || cur.fromY === nxt.toY)
+
+		if (canMerge){
+			// replace both moves with a single one that combines both
+			const newMove = new Move({id: cur.id, x: cur.fromX, y:cur.fromY})
+			newMove.toX = nxt.toX
+			newMove.toY = nxt.toY
+			newMove.combined = true
+
+			// remove moves and add the new one.
+			sequence.splice(i, 2, newMove)
+
+			length-- // reduce sequence length, don't go out of bounds.
+			i-- // re-examine new move with the next one. Not sure it's possible with the board configuration, but nevermind.
+		}
+	}
+	return sequence
 }
