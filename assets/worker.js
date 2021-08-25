@@ -148,7 +148,7 @@ async function solve(prevPieces, lastMove, depthCounter = 0){
 
 		// check winning condition
 		if (lastMove && lastMove.id === 't' && lastMove.toX === solution.x && lastMove.toY === solution.y)
-			return [lastMove]
+			return []
 	}
 
 	// slow down refresh rate
