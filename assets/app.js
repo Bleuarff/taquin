@@ -127,7 +127,7 @@ const app = new Vue({
 
 			let content
 			if (this.bestSequence){
-				content = `[${this.bestSequence.length}] ` + this.bestSequence.map(m => `${m.id}:${m.fromX},${m.fromY}→${m.toX},${m.toY}`).join('\t')
+				content = this.bestSequence.map(m => `${m.id}:${m.fromX},${m.fromY}→${m.toX},${m.toY}`).join('\n')
 			}
 			else
 				content = 'No sequence found'
