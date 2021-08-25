@@ -60,7 +60,8 @@ let lastRefresh = 0
 let boardWidth = 0,
 		boardHeight = 0
 
-const stepInterval = 1
+const stepInterval = 0
+const trialInterval = 500 // delay in ms before starting a new search when the previous is finished.
 
 // listens to messages from parent page
 addEventListener('message', e => {
@@ -108,20 +109,24 @@ async function startSolve(args){
 		}
 
 		if (!sequence){
-			console.log(`No solution found, dead-end after ${trialRounds} rounds and ${(duration/1e3).toFixed(2)}s.`)
+			console.log(`No solution found, dead-end after ${trialRounds} rounds and ${duration.toFixed(0)}ms.`)
 		}
 		else if (sequence.length <= maxDepth){
 			maxDepth = sequence.length // lower the bar for the next search
 			results.sequence = sequence
 
 			console.clear()
-			console.log(`[${sequence.length} moves][${(duration/1e3).toFixed(2)}s]\t` + sequence.join('\t'))
+			console.log(`[${sequence.length} moves][${duration.toFixed(0)}ms]\t` + sequence.join('\t'))
 		}
 		else{
-			console.log(`Solution found in ${sequence.length} moves. ${trialRounds} rounds and ${(duration/1e3).toFixed(2)}s`)
+			console.log(`Solution found in ${sequence.length} moves. ${trialRounds} rounds and ${duration.toFixed(0)}ms`)
 		}
 
 		postMessage(results)
+
+		await new Promise(resolve => {
+			setTimeout(resolve, trialInterval)
+		})
 	}
 }
 
