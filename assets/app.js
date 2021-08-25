@@ -60,6 +60,15 @@ const app = new Vue({
 				this.updateStats(e.data)
 			}
 		}
+
+		const storedBest = localStorage.getItem('bestSequence')
+		if (storedBest)
+			this.maxDepth = parseInt(storedBest, 10)
+	},
+	watch: {
+		maxDepth: function(value){
+			document.title = document.title.replace(/( \[\d+\])?$/, ` [${value}]`)
+		}
 	},
 	methods: {
 		startSolve: async function(e){
@@ -86,9 +95,8 @@ const app = new Vue({
 
 			// limit the number of solutions we store & display
 			this.solutions = [newSolution, ...this.solutions.slice(0, 4)]
-
-			document.title = document.title.replace(/( \[\d+\])?$/, ` [${newSolution.sequenceLength}]`)
 			this.maxDepth = newSolution.sequenceLength
+			localStorage.setItem('bestSequence', this.maxDepth)
 		},
 
 		updateStats: function(data){
