@@ -61,7 +61,7 @@ let boardWidth = 0,
 		boardHeight = 0
 
 const stepInterval = 0
-const trialInterval = 500 // delay in ms before starting a new search when the previous is finished.
+const trialInterval = 80 // delay in ms before starting a new search when the previous is finished.
 
 // listens to messages from parent page
 addEventListener('message', e => {
