@@ -101,22 +101,20 @@ async function startSolve(args){
 		const perfEntries = performance.getEntriesByName('solve-duration', 'measure'),
 					duration = perfEntries[perfEntries.length -1].duration
 
-		const results = {
-			name: 'solve',
-			trial: trialsCounter,
-			rounds: trialRounds,
-			duration
-		}
-
-		if (sequence && sequence.length <= maxDepth){
+		if (sequence && sequence.length < maxDepth){
 			maxDepth = sequence.length // lower the bar for the next search
-			results.sequence = sequence
 
 			console.clear()
 			console.log(`[${sequence.length} moves][${duration.toFixed(0)}ms]\t` + sequence.join('\t'))
+			postMessage({
+				name: 'solve',
+				trial: trialsCounter,
+				rounds: trialRounds,
+				duration,
+				sequence
+			})
 		}
 
-		postMessage(results)
 
 		await new Promise(resolve => {
 			setTimeout(resolve, trialInterval)
@@ -127,7 +125,7 @@ async function startSolve(args){
 // finds the sequence of moves that resolves the problem, and records it.
 async function solve(prevPieces, lastMove, depthCounter = 0){
 	// give up on path if we're in too deep
-	if (++depthCounter > maxDepth){
+	if (++depthCounter >= maxDepth){
 		return false
 	}
 
