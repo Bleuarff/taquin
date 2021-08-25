@@ -11,10 +11,6 @@ body{
 #app-ctnr{
 	max-width: 400px;
 	margin: auto;
-	height: 100vh;
-	display: grid;
-	grid-template-columns: auto;
-	grid-template-rows: fit-content(530px) 50px auto;
 }
 
 @media (max-width: 400px){
@@ -38,7 +34,6 @@ body{
 	border: 3px solid black;
 	border-radius: 8px;
 	margin-top: 10px;
-	margin-bottom: 1em;
 	position: relative;
 }
 
@@ -88,21 +83,24 @@ body{
 
 #solve-btn{
 	font-size: 1.2em;
-	padding: 0 2em;
+	padding: .4em 2em;
 	margin: auto;
 	display: block;
 	height: 100%;
 }
 
 .rt-info{
-	position: absolute;
-	bottom: 1px;
 	width: 100%;
+	height: 1rem;
+}
+
+.rt-info > div{
 	display: flex;
 	flex-flow: row nowrap;
 	justify-content: space-between;
 	font-size: .9em;
 }
+
 #board-ctnr{
 	position: relative;
 }
@@ -121,9 +119,13 @@ body{
 	margin-bottom: .5em;
 	border-radius: 5px;
 	align-items: baseline;
+	font-size: .85em;
 }
-.solution:first-child span:last-of-type{
-	font-size: 1.2em;
+.moves{
+	font-size: 1rem;
+}
+.solution:first-child .moves{
+	font-size: 1.2rem;
 }
 
 #info > *{
@@ -139,7 +141,7 @@ body{
 	position: absolute;
 	top: 0;
 	left: 0;
-	width: 100vw;
+	width: 100%;
 	height: var(--height);
 	background: linear-gradient(90deg, green, yellow, red);
 }

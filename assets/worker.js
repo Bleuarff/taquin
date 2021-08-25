@@ -108,18 +108,12 @@ async function startSolve(args){
 			duration
 		}
 
-		if (!sequence){
-			console.log(`No solution found, dead-end after ${trialRounds} rounds and ${duration.toFixed(0)}ms.`)
-		}
-		else if (sequence.length <= maxDepth){
+		if (sequence && sequence.length <= maxDepth){
 			maxDepth = sequence.length // lower the bar for the next search
 			results.sequence = sequence
 
 			console.clear()
 			console.log(`[${sequence.length} moves][${duration.toFixed(0)}ms]\t` + sequence.join('\t'))
-		}
-		else{
-			console.log(`Solution found in ${sequence.length} moves. ${trialRounds} rounds and ${duration.toFixed(0)}ms`)
 		}
 
 		postMessage(results)

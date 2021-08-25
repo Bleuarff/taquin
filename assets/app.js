@@ -90,7 +90,7 @@ const app = new Vue({
 				round: args.rounds,
 				trial: args.trial,
 				sequenceLength: this.bestSequence.length,
-				duration: (args.duration / 1e3).toFixed(2)
+				duration: args.duration.toFixed(0)
 			}
 
 			// limit the number of solutions we store & display

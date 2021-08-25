@@ -29,9 +29,11 @@
 					</div>
 				</div>
 
-				<div class="rt-info" v-show="running">
-					<span>Round {{trialsCounter}}#{{roundCounter}}</span>
-					<span>{{statesCounter}} States</span>
+				<div class="rt-info">
+					<div v-show="running">
+						<span>Round {{trialsCounter}}_{{roundCounter}}</span>
+						<span>{{statesCounter}} States</span>
+					</div>
 				</div>
 			</div>
 
@@ -41,9 +43,9 @@
 
 			<div class="solutions-ctnr">
 				<div v-for="(sol, i) in solutions" class="solution">
-					<span>{{sol.trial}}#{{sol.round}}</span>
-					<span>{{sol.duration}}s</span>
-					<span>{{sol.sequenceLength}} moves</span>
+					<span class="moves">{{sol.sequenceLength}} moves</span>
+					<span>{{sol.duration}}ms</span>
+					<span>{{sol.round}} rounds</span>
 					<button v-if="i === 0" v-on:click="copySequence" class="copy-btn">&#x1F4CB;</button>
 				</div>
 			</div>
