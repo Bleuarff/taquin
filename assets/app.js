@@ -47,7 +47,8 @@ const app = new Vue({
 			statesCounter: 0, // approx. number of unique hashes encountered
 			depthMaxScale: 1, // approx. current depth
 			uiSubsamplingFactor: 100, // ui values are updated only 1/N times,
-			trialsCounter: 0 // number of runs we've done
+			trialsCounter: 0, // number of runs we've done
+			solvedCounter: 0,
 	},
 	created: function(){
 		this.refPieces = this.clone(this.pieces)
@@ -97,6 +98,7 @@ const app = new Vue({
 			this.solutions = [newSolution, ...this.solutions.slice(0, 4)]
 			this.maxDepth = newSolution.sequenceLength
 			localStorage.setItem('bestSequence', this.maxDepth)
+			this.solvedCounter++
 		},
 
 		updateStats: function(data){
