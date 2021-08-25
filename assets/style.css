@@ -136,7 +136,7 @@ body{
 	align-self: center;
 }
 
-#depth-bg{
+/* #depth-bg{
 	--height: 4px;
 	position: absolute;
 	top: 0;
@@ -154,4 +154,4 @@ body{
 	width: 100%;
 	transform-origin: right;
 	transform: scaleX(var(--depth-mask-scale, 1));
-}
+} */

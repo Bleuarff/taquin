@@ -14,9 +14,9 @@
 
 
 		<div id="app-ctnr">
-			<div id="depth-bg">
+			<!-- <div id="depth-bg">
 				<div id="depth-mask" :style="`--depth-mask-scale:${depthMaxScale.toFixed(2)};`"></div>
-			</div>
+			</div> -->
 
 			<div id="board-ctnr">
 				<div id="board" :style="`--rows:${board.height}; --columns:${board.width}`">
@@ -45,7 +45,7 @@
 				<div v-for="(sol, i) in solutions" class="solution">
 					<span class="moves">{{sol.sequenceLength}} moves</span>
 					<span>{{sol.duration}}ms</span>
-					<span>{{sol.round}} rounds</span>
+					<span>{{sol.round}} steps</span>
 					<button v-if="i === 0" v-on:click="copySequence" class="copy-btn">&#x1F4CB;</button>
 				</div>
 			</div>
