@@ -71,6 +71,11 @@ const app = new Vue({
 			document.title = document.title.replace(/( \[\d+\])?$/, ` [${value}]`)
 		}
 	},
+	computed: {
+		serializedMoves: function(){
+			return this.bestSequence.map(m => `${m.id}:${m.fromX},${m.fromY}→${m.toX},${m.toY}${m.combined ? ' [C]': ''}`).join('\n')
+		}
+	},
 	methods: {
 		startSolve: async function(e){
 			worker.postMessage({
@@ -98,7 +103,11 @@ const app = new Vue({
 			this.solutions = [newSolution, ...this.solutions.slice(0, 4)]
 			this.maxDepth = newSolution.sequenceLength
 			localStorage.setItem('bestSequence', this.maxDepth)
+			localStorage.setItem('sequence', this.serializedMoves)
 			this.solvedCounter++
+
+			console.clear()
+			console.log(`[${this.bestSequence.length} moves][${newSolution.duration}ms]\n` + this.serializedMoves)
 		},
 
 		updateStats: function(data){
@@ -127,12 +136,7 @@ const app = new Vue({
 				return
 			}
 
-			let content
-			if (this.bestSequence){
-				content = this.bestSequence.map(m => `${m.id}:${m.fromX},${m.fromY}→${m.toX},${m.toY}${m.combined ? ' [C]': ''}`).join('\n')
-			}
-			else
-				content = 'No sequence found'
+			const content = this.serializedMoves || 'No sequence found'
 
 			navigator.clipboard.writeText(content).then(() => {})
 		}

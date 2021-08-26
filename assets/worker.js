@@ -110,8 +110,6 @@ async function startSolve(args){
 			if (sequence.length < maxDepth){
 				maxDepth = sequence.length // lower the bar for the next search
 
-				console.clear()
-				console.log(`[${sequence.length} moves][${duration.toFixed(0)}ms]\t` + sequence.join('\t'))
 				postMessage({
 					name: 'solve',
 					trial: trialsCounter,
