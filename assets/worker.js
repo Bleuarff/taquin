@@ -231,20 +231,16 @@ async function solve(prevPieces, lastMove, depthCounter = 0){
 		moves = [winnerMove]
 	}
 
-	// allow delay for visualization, and not blocking thread.
-	if (stepInterval)
-		await new Promise(resolve => { setTimeout(resolve, stepInterval) })
-
 	// Sort array: moves for target piece are put first (and randomized between them),
 	// other moves are randomized. No guarantee of it being bias-free.
-	moves.sort((a, b) => {
-		if (a.id === 't' && b.id !== 't')
-			return -1
-		else if (a.id !== 't' && b.id === 't')
-			return 1
-		else
-			return (Math.random() * 10 >= 5) ? 1 : -1
-	})
+	// moves.sort((a, b) => {
+	// 	if (a.id === 't' && b.id !== 't')
+	// 		return -1
+	// 	else if (a.id !== 't' && b.id === 't')
+	// 		return 1
+	// 	else
+	// 		return (Math.random() * 10 >= 5) ? 1 : -1
+	// })
 
 	let isOK = false
 
